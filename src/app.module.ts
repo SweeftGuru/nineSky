@@ -3,12 +3,20 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './user/entities/user.entity';
+import { User } from '../libs/entities/user.entity';
+import { FlightModule } from './flight/flight.module';
+import { ParcelModule } from './parcel/parcel.module';
+import { Parcel } from 'libs/entities/parcel.entity';
+import { Flight } from 'libs/entities/flight.entity';
+import { Declaration } from 'libs/entities/Declaration.entity';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
-    UserModule, 
+    UserModule,
     AuthModule,
+    FlightModule,
+    ParcelModule,
     ConfigModule.forRoot({
       isGlobal: true, // This makes the config module globally available
       envFilePath: '.env', // Specify the path to your .env file (optional if it's in the root directory)
@@ -23,14 +31,13 @@ import { User } from './user/entities/user.entity';
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DB'),
-        entities: [User], // Auto-load entities
-        synchronize: true, // Set to false in production
+        entities: [User, Parcel, Flight, Declaration], // Auto-load entities
+        synchronize: false, // Set to false in production
         migrationsRun: false,
-        logging: true, 
+        logging: true,
       }),
     }),
+    AdminModule,
   ],
 })
-export class AppModule {
-}
-
+export class AppModule {}
